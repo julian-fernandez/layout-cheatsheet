@@ -1,8 +1,12 @@
 import { Component } from '@angular/core';
+import { GridAutoColumnsDemoComponent } from './components/grid-auto-columns-demo.component';
+import { GridAutoFitFillDemoComponent } from './components/grid-auto-fit-fill-demo.component';
 import { GridAutoFlowDemoComponent } from './components/grid-auto-flow-demo.component';
 import { GridColumnSpanDemoComponent } from './components/grid-column-span-demo.component';
 import { GridGapDemoComponent } from './components/grid-gap-demo.component';
 import { GridJustifyAlignContentDemoComponent } from './components/grid-justify-align-content-demo.component';
+import { GridSubgridDemoComponent } from './components/grid-subgrid-demo.component';
+import { GridTemplateAreasDemoComponent } from './components/grid-template-areas-demo.component';
 import { GridTemplateColumnsDemoComponent } from './components/grid-template-columns-demo.component';
 import { GridTemplateRowsDemoComponent } from './components/grid-template-rows-demo.component';
 import { JustifyAlignItemsDemoComponent } from './components/justify-align-items-demo.component';
@@ -15,9 +19,13 @@ import { JustifyAlignItemsDemoComponent } from './components/justify-align-items
     GridTemplateRowsDemoComponent,
     GridGapDemoComponent,
     GridAutoFlowDemoComponent,
-    GridColumnSpanDemoComponent,
+    GridAutoColumnsDemoComponent,
+    GridAutoFitFillDemoComponent,
+    GridTemplateAreasDemoComponent,
     JustifyAlignItemsDemoComponent,
     GridJustifyAlignContentDemoComponent,
+    GridColumnSpanDemoComponent,
+    GridSubgridDemoComponent,
   ],
   template: `
     <section class="section">
@@ -30,21 +38,37 @@ import { JustifyAlignItemsDemoComponent } from './components/justify-align-items
       </header>
 
       <div class="section__group">
-        <h3 class="section__group-label">Container properties</h3>
+        <h3 class="section__group-label">Defining the grid</h3>
         <div class="section__demos">
           <lc-grid-template-columns-demo />
           <lc-grid-template-rows-demo />
           <lc-grid-gap-demo />
+          <lc-grid-template-areas-demo />
+          <lc-grid-auto-fit-fill-demo />
+        </div>
+      </div>
+
+      <div class="section__group">
+        <h3 class="section__group-label">Auto placement &amp; implicit tracks</h3>
+        <div class="section__demos">
           <lc-grid-auto-flow-demo />
+          <lc-grid-auto-columns-demo />
+        </div>
+      </div>
+
+      <div class="section__group">
+        <h3 class="section__group-label">Alignment</h3>
+        <div class="section__demos">
           <lc-justify-align-items-demo />
           <lc-grid-justify-align-content-demo />
         </div>
       </div>
 
       <div class="section__group">
-        <h3 class="section__group-label">Item properties</h3>
+        <h3 class="section__group-label">Item placement &amp; advanced</h3>
         <div class="section__demos">
           <lc-grid-column-span-demo />
+          <lc-grid-subgrid-demo />
         </div>
       </div>
     </section>

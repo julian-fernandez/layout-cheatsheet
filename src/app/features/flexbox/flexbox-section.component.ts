@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AlignContentDemoComponent } from './components/align-content-demo.component';
 import { AlignItemsDemoComponent } from './components/align-items-demo.component';
 import { AlignSelfDemoComponent } from './components/align-self-demo.component';
+import { FlexBasisDemoComponent } from './components/flex-basis-demo.component';
 import { FlexDirectionDemoComponent } from './components/flex-direction-demo.component';
 import { FlexGrowDemoComponent } from './components/flex-grow-demo.component';
 import { FlexShrinkDemoComponent } from './components/flex-shrink-demo.component';
@@ -19,11 +20,12 @@ import { OrderDemoComponent } from './components/order-demo.component';
     JustifyContentDemoComponent,
     AlignItemsDemoComponent,
     AlignContentDemoComponent,
-    AlignSelfDemoComponent,
+    GapDemoComponent,
     FlexGrowDemoComponent,
     FlexShrinkDemoComponent,
+    FlexBasisDemoComponent,
+    AlignSelfDemoComponent,
     OrderDemoComponent,
-    GapDemoComponent,
   ],
   template: `
     <section class="section">
@@ -52,6 +54,7 @@ import { OrderDemoComponent } from './components/order-demo.component';
         <div class="section__demos">
           <lc-flex-grow-demo />
           <lc-flex-shrink-demo />
+          <lc-flex-basis-demo />
           <lc-align-self-demo />
           <lc-order-demo />
         </div>

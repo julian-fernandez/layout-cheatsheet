@@ -26,7 +26,7 @@ import { Component, input } from '@angular/core';
 
       @if (cssOutput()) {
         <footer class="demo__code">
-          <code>{{ cssOutput() }}</code>
+          <pre class="demo__code-pre"><code>{{ cssOutput() }}</code></pre>
         </footer>
       }
     </article>
@@ -114,9 +114,16 @@ import { Component, input } from '@angular/core';
       padding: 0.625rem 1.25rem;
       background: t.$color-surface-raised;
       border-top: 1px solid t.$color-border;
+    }
+
+    .demo__code-pre {
+      margin: 0;
       font-family: t.$font-mono;
       font-size: 0.8125rem;
       color: t.$color-success;
+      white-space: pre;
+      overflow-x: auto;
+      line-height: 1.6;
     }
   `,
 })

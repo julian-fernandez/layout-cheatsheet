@@ -9,20 +9,29 @@ import { ControlSliderComponent } from '../../../shared/components/control-slide
   imports: [PropertyDemoComponent, PreviewBoxComponent, ControlSliderComponent],
   template: `
     <lc-property-demo
-      property="gap"
-      description="Sets the space between flex (or grid) items. Replaces the old margin hacks. You can set row-gap and column-gap independently, or use a single 'gap' shorthand for both."
+      property="row-gap / column-gap"
+      description="Controls spacing between items independently on each axis. 'gap' is the shorthand for both. Works on flex (when wrapping) and grid — replaces the old margin-based spacing hacks. Try increasing row-gap with flex-wrap active to see it affect wrapped rows."
       appliesTo="flex container / grid container"
       [cssOutput]="css()"
     >
       <div controls style="display:flex; flex-direction:column; gap: 1rem;">
         <lc-control-slider
-          label="gap"
-          [value]="gap()"
+          label="column-gap"
+          [value]="colGap()"
           [min]="0"
           [max]="48"
           [step]="4"
           unit="px"
-          (valueChange)="gap.set($event)"
+          (valueChange)="colGap.set($event)"
+        />
+        <lc-control-slider
+          label="row-gap"
+          [value]="rowGap()"
+          [min]="0"
+          [max]="48"
+          [step]="4"
+          unit="px"
+          (valueChange)="rowGap.set($event)"
         />
       </div>
       <lc-preview-box
@@ -34,15 +43,20 @@ import { ControlSliderComponent } from '../../../shared/components/control-slide
   `,
 })
 export class GapDemoComponent {
-  protected readonly gap = signal(8);
-  protected readonly boxes = [{}, {}, {}, {}];
+  protected readonly colGap = signal(8);
+  protected readonly rowGap = signal(8);
+  protected readonly boxes = [{}, {}, {}, {}, {}, {}];
 
   protected readonly containerStyle = computed(() => ({
     display: 'flex',
     'flex-wrap': 'wrap',
-    gap: `${this.gap()}px`,
+    'column-gap': `${this.colGap()}px`,
+    'row-gap': `${this.rowGap()}px`,
     padding: '12px',
   }));
 
-  protected readonly css = computed(() => `display: flex; gap: ${this.gap()}px;`);
+  protected readonly css = computed(
+    () =>
+      `display: flex;\nflex-wrap: wrap;\ncolumn-gap: ${this.colGap()}px;\nrow-gap: ${this.rowGap()}px;`,
+  );
 }
