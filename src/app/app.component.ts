@@ -124,10 +124,10 @@ type Tab = 'flexbox' | 'grid';
       max-width: 960px;
       width: 100%;
       margin: 0 auto;
-      padding: t.$spacing-2xl t.$spacing-xl;
+      padding: t.$spacing-xl t.$spacing-md;
 
-      @media (max-width: 640px) {
-        padding: t.$spacing-xl t.$spacing-md;
+      @media (min-width: 640px) {
+        padding: t.$spacing-2xl t.$spacing-xl;
       }
     }
 

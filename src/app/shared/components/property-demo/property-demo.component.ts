@@ -82,24 +82,24 @@ import { Component, input } from '@angular/core';
 
     .demo__body {
       display: grid;
-      grid-template-columns: 280px 1fr;
+      grid-template-columns: 1fr;
       min-height: 200px;
 
-      @media (max-width: 768px) {
-        grid-template-columns: 1fr;
+      @media (min-width: 768px) {
+        grid-template-columns: 280px 1fr;
       }
     }
 
     .demo__controls {
       padding: 1.25rem;
-      border-right: 1px solid t.$color-border;
+      border-bottom: 1px solid t.$color-border;
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
 
-      @media (max-width: 768px) {
-        border-right: none;
-        border-bottom: 1px solid t.$color-border;
+      @media (min-width: 768px) {
+        border-bottom: none;
+        border-right: 1px solid t.$color-border;
       }
     }
 
