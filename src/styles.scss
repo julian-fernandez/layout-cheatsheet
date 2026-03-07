@@ -1,0 +1,55 @@
+@use 'styles/tokens' as t;
+
+// ─── Reset ────────────────────────────────────────────────────────────────────
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: t.$font-sans;
+  font-size: 16px;
+  line-height: 1.6;
+  background: t.$color-bg;
+  color: t.$color-text-primary;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+code, pre {
+  font-family: t.$font-mono;
+}
+
+a {
+  color: t.$color-accent;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input[type='range'] {
+  accent-color: t.$color-accent;
+}
