@@ -1,13 +1,15 @@
 import { Component, signal } from '@angular/core';
 import { FlexboxSectionComponent } from './features/flexbox/flexbox-section.component';
 import { GridSectionComponent } from './features/grid/grid-section.component';
+import { GridPlaygroundComponent } from './features/playground/grid-playground.component';
+import { FlexPlaygroundComponent } from './features/playground/flex-playground.component';
 
-type Tab = 'flexbox' | 'grid';
+type Tab = 'flexbox' | 'grid' | 'grid-playground' | 'flex-playground';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [FlexboxSectionComponent, GridSectionComponent],
+  imports: [FlexboxSectionComponent, GridSectionComponent, GridPlaygroundComponent, FlexPlaygroundComponent],
   template: `
     <div class="app">
       <header class="hero">
@@ -42,6 +44,12 @@ type Tab = 'flexbox' | 'grid';
           }
           @case ('grid') {
             <lc-grid-section />
+          }
+          @case ('grid-playground') {
+            <lc-grid-playground />
+          }
+          @case ('flex-playground') {
+            <lc-flex-playground />
           }
         }
       </main>
@@ -145,8 +153,11 @@ type Tab = 'flexbox' | 'grid';
 export class AppComponent {
   protected readonly activeTab = signal<Tab>('flexbox');
 
+
   protected readonly tabs: { id: Tab; label: string }[] = [
-    { id: 'flexbox', label: 'Flexbox' },
-    { id: 'grid', label: 'CSS Grid' },
+    { id: 'flexbox',          label: 'Flexbox' },
+    { id: 'grid',             label: 'CSS Grid' },
+    { id: 'flex-playground',  label: 'Flex Playground' },
+    { id: 'grid-playground',  label: 'Grid Playground' },
   ];
 }
