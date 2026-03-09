@@ -91,21 +91,34 @@ type Mode = 'subgrid' | 'independent';
   `,
 })
 export class GridSubgridDemoComponent {
+  /** 'subgrid' inherits parent column tracks; 'independent' uses its own equal-thirds grid. */
   protected readonly mode = signal<Mode>('subgrid');
+
+  /**
+   * Wrapper method for the `(valueChange)` binding.
+   * Angular's template parser doesn't support `$event as Mode` inline casts.
+   */
   protected setMode(value: string): void { this.mode.set(value as Mode); }
 
+  // Realistic card data — demonstrates that subgrid is primarily useful for
+  // aligning content across sibling containers (like table rows without a <table>).
   protected readonly cards = [
     { id: 1, name: 'Alice',   description: 'Leads the frontend architecture', status: 'Active' },
     { id: 2, name: 'Bob',     description: 'Owns the design system',          status: 'Away'   },
     { id: 3, name: 'Charlie', description: 'Backend infra',                   status: 'Done'   },
   ];
 
-  // subgrid → inherit parent's 1fr 2fr 1fr tracks
-  // independent → own equal thirds, visibly misaligned with the header
+  /**
+   * The key derived value — returns the CSS string applied to each card's grid-template-columns.
+   * 'subgrid': the card inherits the parent's 1fr 2fr 1fr tracks → columns align with the header.
+   * '1fr 1fr 1fr': the card uses its own equal thirds → middle column is narrow, header misaligns.
+   * The parent uses 1fr 2fr 1fr (not 1fr 1fr 1fr) so the difference is immediately visible.
+   */
   protected readonly childColumns = computed(() =>
     this.mode() === 'subgrid' ? 'subgrid' : '1fr 1fr 1fr',
   );
 
+  /** Derives the CSS snippet. Shows both the parent grid and the child card rule. */
   protected readonly css = computed(() =>
     this.mode() === 'subgrid'
       ? `.parent {\n  display: grid;\n  grid-template-columns: 1fr 2fr 1fr;\n}\n.card {\n  grid-column: span 3;\n  display: grid;\n  grid-template-columns: subgrid; /* inherits 1fr 2fr 1fr */\n}`

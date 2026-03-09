@@ -33,10 +33,13 @@ const OPTIONS = ['stretch', 'flex-start', 'flex-end', 'center', 'baseline'];
 })
 export class AlignItemsDemoComponent {
   protected readonly options = OPTIONS;
+
+  /** Currently selected align-items value. Defaults to 'stretch' (the CSS default). */
   protected readonly value = signal('stretch');
 
   // min-height (not height) so align-items:stretch can still override the cross-size.
-  // With stretch, items fill the container. With other values, min-height becomes the intrinsic size.
+  // With stretch, items fill the container height. With other values, min-height is the intrinsic size.
+  // Using height would block stretch from working, since an explicit height takes priority.
   protected readonly boxes: { style: Record<string, string> }[] = [
     { style: { 'min-height': '40px' } },
     { style: { 'min-height': '80px' } },
@@ -44,6 +47,7 @@ export class AlignItemsDemoComponent {
     { style: { 'min-height': '64px' } },
   ];
 
+  /** Derives the container style. min-height gives the container room for items to align within. */
   protected readonly containerStyle = computed(() => ({
     display: 'flex',
     'align-items': this.value(),
@@ -52,5 +56,6 @@ export class AlignItemsDemoComponent {
     'min-height': '160px',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. */
   protected readonly css = computed(() => `display: flex; align-items: ${this.value()};`);
 }

@@ -31,9 +31,17 @@ const OPTIONS = ['row', 'row-reverse', 'column', 'column-reverse'];
   `,
 })
 export class FlexDirectionDemoComponent {
+  /** Declared outside the class to avoid re-allocating the array on every change detection cycle. */
   protected readonly options = OPTIONS;
+
+  /** Currently selected flex-direction value. Drives both the preview and CSS output. */
   protected readonly value = signal('row');
 
+  /**
+   * Derives the full inline style object applied to the preview container.
+   * Angular re-evaluates this automatically whenever `value` changes —
+   * no manual subscription or change detection trigger needed.
+   */
   protected readonly containerStyle = computed(() => ({
     display: 'flex',
     'flex-direction': this.value(),
@@ -41,5 +49,6 @@ export class FlexDirectionDemoComponent {
     padding: '12px',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. Updates in sync with `containerStyle`. */
   protected readonly css = computed(() => `display: flex; flex-direction: ${this.value()};`);
 }

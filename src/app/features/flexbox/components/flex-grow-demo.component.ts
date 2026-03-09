@@ -46,10 +46,15 @@ import { ControlSliderComponent } from '../../../shared/components/control-slide
   `,
 })
 export class FlexGrowDemoComponent {
+  /** flex-grow value for box 1 — controls its share of remaining free space. */
   protected readonly grow1 = signal(1);
+  /** flex-grow value for box 2. */
   protected readonly grow2 = signal(1);
+  /** flex-grow value for box 3. */
   protected readonly grow3 = signal(1);
 
+  // containerStyle is static — only the per-item grow values change,
+  // so we don't need computed() here. Plain object is sufficient.
   protected readonly containerStyle = {
     display: 'flex',
     gap: '8px',
@@ -57,12 +62,17 @@ export class FlexGrowDemoComponent {
     'align-items': 'center',
   };
 
+  /**
+   * Per-item style objects recomputed whenever any grow signal changes.
+   * Each grow value is cast to String because inline style objects require strings.
+   */
   protected readonly boxes = computed(() => [
     { style: { 'flex-grow': String(this.grow1()), 'min-height': '64px' } },
     { style: { 'flex-grow': String(this.grow2()), 'min-height': '64px' } },
     { style: { 'flex-grow': String(this.grow3()), 'min-height': '64px' } },
   ]);
 
+  /** Derives the CSS snippet for all three items. */
   protected readonly css = computed(
     () =>
       `.box-1 { flex-grow: ${this.grow1()}; } ` +

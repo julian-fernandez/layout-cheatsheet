@@ -33,8 +33,10 @@ import { ControlSliderComponent } from '../../../shared/components/control-slide
   `,
 })
 export class FlexBasisDemoComponent {
+  /** flex-basis in pixels for item 1 — the "ideal" size before grow/shrink are applied. */
   protected readonly basis = signal(120);
 
+  // containerStyle is static — only item 1's basis changes, so plain object suffices.
   protected readonly containerStyle: Record<string, string> = {
     display: 'flex',
     gap: '8px',
@@ -42,6 +44,11 @@ export class FlexBasisDemoComponent {
     'align-items': 'center',
   };
 
+  /**
+   * Item 1 uses the controlled basis with flex-grow:0 and flex-shrink:1 to show
+   * flex-basis as a hard starting point. Items 2 & 3 use 'auto' (sized by content)
+   * to contrast with the explicitly sized item.
+   */
   protected readonly boxes = computed(() => [
     {
       style: {

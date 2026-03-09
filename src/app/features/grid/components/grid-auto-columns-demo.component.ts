@@ -33,9 +33,18 @@ import { ControlSliderComponent } from '../../../shared/components/control-slide
   `,
 })
 export class GridAutoColumnsDemoComponent {
+  /** Width in px for implicitly created column tracks. */
   protected readonly autoColWidth = signal(60);
+
+  // 5 items in a 2-explicit-column grid: items 1–2 land in the explicit 100px columns,
+  // items 3–5 spill into implicit columns whose width is controlled by this slider.
   protected readonly boxes = [{}, {}, {}, {}, {}];
 
+  /**
+   * grid-auto-flow: column forces each item into a new column track,
+   * making explicit vs implicit track sizing clearly visible.
+   * overflow-x: auto ensures items are accessible even when implicit columns exceed the container.
+   */
   protected readonly containerStyle = computed(() => ({
     display: 'grid',
     'grid-template-columns': 'repeat(2, 100px)',
@@ -46,6 +55,7 @@ export class GridAutoColumnsDemoComponent {
     'overflow-x': 'auto',
   }));
 
+  /** Derives the CSS snippet. The comment in the output clarifies explicit vs implicit tracks. */
   protected readonly css = computed(
     () =>
       `display: grid;\ngrid-template-columns: repeat(2, 100px); /* explicit */\ngrid-auto-flow: column;\ngrid-auto-columns: ${this.autoColWidth()}px; /* implicit columns */`,

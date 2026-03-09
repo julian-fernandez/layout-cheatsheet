@@ -33,7 +33,12 @@ const OPTIONS = ['flex-start', 'flex-end', 'center', 'space-between', 'space-aro
 })
 export class AlignContentDemoComponent {
   protected readonly options = OPTIONS;
+
+  /** Currently selected align-content value. */
   protected readonly value = signal('flex-start');
+
+  // 6 items with a min-width so they wrap into at least two rows,
+  // giving align-content space between rows to distribute.
   protected readonly boxes = [
     { style: { 'min-width': '90px', height: '40px' } },
     { style: { 'min-width': '90px', height: '40px' } },
@@ -43,6 +48,10 @@ export class AlignContentDemoComponent {
     { style: { 'min-width': '90px', height: '40px' } },
   ];
 
+  /**
+   * flex-wrap: wrap is required — align-content has no effect on a single-line container.
+   * min-height gives the container extra cross-axis space so spacing values are visible.
+   */
   protected readonly containerStyle = computed(() => ({
     display: 'flex',
     'flex-wrap': 'wrap',
@@ -52,6 +61,7 @@ export class AlignContentDemoComponent {
     'min-height': '220px',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. */
   protected readonly css = computed(
     () => `display: flex; flex-wrap: wrap; align-content: ${this.value()};`
   );

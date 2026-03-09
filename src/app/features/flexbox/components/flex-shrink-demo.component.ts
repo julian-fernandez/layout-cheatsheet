@@ -46,11 +46,15 @@ import { ControlSliderComponent } from '../../../shared/components/control-slide
   `,
 })
 export class FlexShrinkDemoComponent {
+  /** flex-shrink value for box 1 — controls how much it gives up when space is scarce. */
   protected readonly shrink1 = signal(1);
+  /** flex-shrink value for box 2. */
   protected readonly shrink2 = signal(1);
+  /** flex-shrink value for box 3. */
   protected readonly shrink3 = signal(1);
 
-  // Wide flex-basis forces the container to be overcrowded so shrink is visible
+  // Wide flex-basis (300px each) ensures the combined width exceeds the container
+  // so items are always in a "must shrink" situation — shrink values always matter.
   protected readonly containerStyle = {
     display: 'flex',
     gap: '8px',
@@ -59,7 +63,11 @@ export class FlexShrinkDemoComponent {
     overflow: 'hidden',
   };
 
-  // 3 × 300px = 900px > container width, so items MUST shrink — ratio controls who gives more
+  /**
+   * 3 × 300px = 900px, which far exceeds any typical container width.
+   * Items are always forced to shrink — the shrink ratio determines who gives more.
+   * A shrink value of 0 means that item refuses to shrink and will overflow.
+   */
   protected readonly boxes = computed(() => [
     { style: { 'flex-basis': '300px', 'flex-shrink': String(this.shrink1()), 'min-height': '64px' } },
     { style: { 'flex-basis': '300px', 'flex-shrink': String(this.shrink2()), 'min-height': '64px' } },

@@ -33,10 +33,14 @@ const OPTIONS = ['flex-start', 'flex-end', 'center', 'space-between', 'space-aro
 })
 export class JustifyContentDemoComponent {
   protected readonly options = OPTIONS;
+
+  /** Currently selected justify-content value. */
   protected readonly value = signal('flex-start');
 
+  // Only 3 boxes so space-between/space-around/space-evenly differences are clearly visible
   protected readonly boxes = [{}, {}, {}];
 
+  /** Derives the container style applied to the preview flex container. */
   protected readonly containerStyle = computed(() => ({
     display: 'flex',
     'justify-content': this.value(),
@@ -45,5 +49,6 @@ export class JustifyContentDemoComponent {
     'align-items': 'center',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. */
   protected readonly css = computed(() => `display: flex; justify-content: ${this.value()};`);
 }

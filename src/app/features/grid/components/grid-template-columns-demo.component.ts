@@ -55,23 +55,36 @@ type Mode = 'equal-fr' | 'auto-fit' | 'mixed';
 })
 export class GridTemplateColumnsDemoComponent {
   protected readonly modes: Mode[] = ['equal-fr', 'auto-fit', 'mixed'];
+
+  /** Active column mode — maps to a different grid-template-columns string. */
   protected readonly mode = signal<Mode>('equal-fr');
+
+  /** Number of equal-fr columns (only active in equal-fr mode). */
   protected readonly cols = signal(3);
+
+  /** Minimum item width in px for auto-fit mode (only active in auto-fit mode). */
   protected readonly minWidth = signal(100);
 
   protected readonly boxes = [{}, {}, {}, {}, {}, {}];
 
+  /**
+   * Intermediate computed that maps the friendly mode enum to the actual CSS value.
+   * Extracted as its own computed so both `containerStyle` and `css` can share it
+   * without duplicating the switch logic.
+   */
   protected readonly templateColumns = computed(() => {
     switch (this.mode()) {
       case 'equal-fr':
         return `repeat(${this.cols()}, 1fr)`;
       case 'auto-fit':
+        // auto-fit collapses empty tracks, allowing items to stretch into freed space.
         return `repeat(auto-fit, minmax(${this.minWidth()}px, 1fr))`;
       case 'mixed':
         return '1fr 2fr 1fr';
     }
   });
 
+  /** Derives the full container style object applied to the preview grid. */
   protected readonly containerStyle = computed(() => ({
     display: 'grid',
     'grid-template-columns': this.templateColumns(),
@@ -79,6 +92,7 @@ export class GridTemplateColumnsDemoComponent {
     padding: '12px',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. */
   protected readonly css = computed(
     () => `display: grid; grid-template-columns: ${this.templateColumns()};`
   );

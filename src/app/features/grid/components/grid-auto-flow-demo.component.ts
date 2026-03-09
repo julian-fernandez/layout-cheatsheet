@@ -33,11 +33,14 @@ const OPTIONS = ['row', 'column', 'row dense', 'column dense'];
 })
 export class GridAutoFlowDemoComponent {
   protected readonly options = OPTIONS;
+
+  /** Currently selected grid-auto-flow value. */
   protected readonly value = signal('row');
 
-  // Two span-2 items in a 3-col grid:
-  // row: [1 span2][hole][2 span2][hole][3][4][5]  ← holes visible
-  // row dense: [1 span2][3][2 span2][4][5][...]   ← back-filled
+  // Two span-2 items in a 3-col grid deliberately creates holes:
+  //   row:       [item1 span2][HOLE][item2 span2][HOLE][3][4][5]  ← gaps visible
+  //   row dense: [item1 span2][3  ][item2 span2][4  ][5][ ]       ← holes back-filled
+  // Without a spanning item creating holes, 'dense' has nothing to demonstrate.
   protected readonly boxes: { style: Record<string, string> }[] = [
     { style: { 'grid-column': 'span 2', 'min-height': '56px' } },
     { style: { 'grid-column': 'span 2', 'min-height': '56px' } },
@@ -46,6 +49,7 @@ export class GridAutoFlowDemoComponent {
     { style: { 'min-height': '56px' } },
   ];
 
+  /** Derives the container style. Fixed 3-column template ensures the dense effect is visible. */
   protected readonly containerStyle = computed(() => ({
     display: 'grid',
     'grid-template-columns': 'repeat(3, 1fr)',
@@ -55,5 +59,6 @@ export class GridAutoFlowDemoComponent {
     'min-height': '200px',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. */
   protected readonly css = computed(() => `display: grid; grid-auto-flow: ${this.value()};`);
 }

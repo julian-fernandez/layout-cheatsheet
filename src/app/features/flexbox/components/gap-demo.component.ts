@@ -43,10 +43,19 @@ import { ControlSliderComponent } from '../../../shared/components/control-slide
   `,
 })
 export class GapDemoComponent {
+  /** Space between columns (inline axis). */
   protected readonly colGap = signal(8);
+
+  /** Space between wrapped rows (block axis). Visible only when items wrap. */
   protected readonly rowGap = signal(8);
+
+  // 6 items with flex-wrap so both column-gap and row-gap are always visible
   protected readonly boxes = [{}, {}, {}, {}, {}, {}];
 
+  /**
+   * flex-wrap: wrap ensures items wrap so row-gap is always visible in the demo,
+   * even before the user has changed anything.
+   */
   protected readonly containerStyle = computed(() => ({
     display: 'flex',
     'flex-wrap': 'wrap',
@@ -55,6 +64,7 @@ export class GapDemoComponent {
     padding: '12px',
   }));
 
+  /** Derives the CSS snippet. Uses longhand column-gap/row-gap for clarity. */
   protected readonly css = computed(
     () =>
       `display: flex;\nflex-wrap: wrap;\ncolumn-gap: ${this.colGap()}px;\nrow-gap: ${this.rowGap()}px;`,

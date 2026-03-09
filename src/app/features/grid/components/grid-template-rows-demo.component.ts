@@ -52,12 +52,20 @@ import { ControlSliderComponent } from '../../../shared/components/control-slide
   `,
 })
 export class GridTemplateRowsDemoComponent {
+  /** Height in px for the first explicit row track. */
   protected readonly row1 = signal(60);
+  /** Height in px for the second explicit row track. */
   protected readonly row2 = signal(100);
+  /** Height in px for the third explicit row track. */
   protected readonly row3 = signal(60);
 
+  // 6 items in a 2-column grid fills exactly 3 rows — one item per explicit row track.
   protected readonly boxes = [{}, {}, {}, {}, {}, {}];
 
+  /**
+   * grid-template-columns: 2 columns to keep the grid compact.
+   * grid-template-rows: derives from the three independent height signals.
+   */
   protected readonly containerStyle = computed(() => ({
     display: 'grid',
     'grid-template-columns': 'repeat(2, 1fr)',
@@ -66,6 +74,7 @@ export class GridTemplateRowsDemoComponent {
     padding: '12px',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. */
   protected readonly css = computed(
     () =>
       `grid-template-rows: ${this.row1()}px ${this.row2()}px ${this.row3()}px;`

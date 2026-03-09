@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { GridAutoColumnsDemoComponent } from './components/grid-auto-columns-demo.component';
+import { GridAutoRowsDemoComponent } from './components/grid-auto-rows-demo.component';
 import { GridAutoFitFillDemoComponent } from './components/grid-auto-fit-fill-demo.component';
 import { GridAutoFlowDemoComponent } from './components/grid-auto-flow-demo.component';
 import { GridColumnSpanDemoComponent } from './components/grid-column-span-demo.component';
@@ -20,6 +21,7 @@ import { JustifyAlignItemsDemoComponent } from './components/justify-align-items
     GridGapDemoComponent,
     GridAutoFlowDemoComponent,
     GridAutoColumnsDemoComponent,
+    GridAutoRowsDemoComponent,
     GridAutoFitFillDemoComponent,
     GridTemplateAreasDemoComponent,
     JustifyAlignItemsDemoComponent,
@@ -52,6 +54,7 @@ import { JustifyAlignItemsDemoComponent } from './components/justify-align-items
         <h3 class="section__group-label">Auto placement &amp; implicit tracks</h3>
         <div class="section__demos">
           <lc-grid-auto-flow-demo />
+          <lc-grid-auto-rows-demo />
           <lc-grid-auto-columns-demo />
         </div>
       </div>

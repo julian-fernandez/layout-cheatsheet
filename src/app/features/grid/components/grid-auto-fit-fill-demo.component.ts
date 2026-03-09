@@ -48,12 +48,27 @@ type Mode = 'auto-fill' | 'auto-fit';
   `,
 })
 export class GridAutoFitFillDemoComponent {
+  /** 'auto-fill' preserves empty tracks; 'auto-fit' collapses them so items stretch to fill the row. */
   protected readonly mode = signal<Mode>('auto-fill');
+
+  /**
+   * Wrapper method required because Angular's template parser doesn't support
+   * `$event as Mode` inline type casts. The cast happens here in the class instead.
+   */
   protected setMode(value: string): void { this.mode.set(value as Mode); }
+
+  /** Minimum column width for the minmax() function. */
   protected readonly minWidth = signal(100);
-  // Only 3 items so the gap between auto-fill and auto-fit is clearly visible
+
+  // Only 3 items — with more items, auto-fill and auto-fit look identical.
+  // The difference is only visible when items don't fill the last row.
   protected readonly boxes = [{}, {}, {}];
 
+  /**
+   * `this.mode()` is passed directly into the repeat() call because 'auto-fill'
+   * and 'auto-fit' are valid CSS keyword values for repeat(). This is intentional —
+   * the signal value IS the CSS keyword, no mapping needed.
+   */
   protected readonly containerStyle = computed(() => ({
     display: 'grid',
     'grid-template-columns': `repeat(${this.mode()}, minmax(${this.minWidth()}px, 1fr))`,
@@ -61,6 +76,7 @@ export class GridAutoFitFillDemoComponent {
     padding: '12px',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. */
   protected readonly css = computed(
     () =>
       `grid-template-columns:\n  repeat(${this.mode()}, minmax(${this.minWidth()}px, 1fr));`,

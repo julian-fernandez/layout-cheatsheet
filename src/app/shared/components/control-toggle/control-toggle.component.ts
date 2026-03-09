@@ -66,9 +66,21 @@ import { Component, input, output } from '@angular/core';
     }
   `,
 })
+/**
+ * Reusable button-group control.
+ * Renders a labelled row of pill buttons where exactly one can be active at a time.
+ * Fully stateless — the parent owns the selected value and updates it via `valueChange`.
+ */
 export class ControlToggleComponent {
+  /** Accessible label shown above the button group (e.g. "flex-direction"). */
   readonly label = input.required<string>();
+
+  /** The list of string options to render as individual buttons. */
   readonly options = input.required<string[]>();
+
+  /** Currently selected value — the matching button receives the active style. */
   readonly value = input.required<string>();
+
+  /** Emits the clicked option string so the parent can update its signal. */
   readonly valueChange = output<string>();
 }

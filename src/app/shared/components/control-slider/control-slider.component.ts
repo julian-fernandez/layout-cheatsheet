@@ -69,15 +69,38 @@ import { Component, input, output } from '@angular/core';
     }
   `,
 })
+/**
+ * Reusable range-slider control.
+ * Stateless: reflects `value` from the parent and emits numeric changes via `valueChange`.
+ * Displays the live value next to the label and min/max bounds below the track.
+ */
 export class ControlSliderComponent {
+  /** Label shown above the slider (e.g. "column-gap"). */
   readonly label = input.required<string>();
+
+  /** Current numeric value — reflected directly onto the native range input. */
   readonly value = input.required<number>();
+
+  /** Minimum allowed value. Defaults to 0. */
   readonly min = input(0);
+
+  /** Maximum allowed value. Defaults to 10. */
   readonly max = input(10);
+
+  /** Step increment between slider positions. Defaults to 1. */
   readonly step = input(1);
+
+  /** Optional unit suffix appended to the displayed value (e.g. "px", "fr"). */
   readonly unit = input('');
+
+  /** Emits the new numeric value whenever the slider moves. */
   readonly valueChange = output<number>();
 
+  /**
+   * Native `input` events always carry string values.
+   * This handler casts the string to a Number before emitting
+   * so parent signals can stay typed as `number`.
+   */
   protected onInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.valueChange.emit(Number(input.value));

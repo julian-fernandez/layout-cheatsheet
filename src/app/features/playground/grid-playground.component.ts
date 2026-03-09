@@ -356,49 +356,100 @@ const BOX_COLORS = [
     }
   `,
 })
+/**
+ * Single large playground for all CSS Grid container and item properties.
+ *
+ * Architecture: all knobs are signals; the live preview and CSS output are both
+ * derived via computed(). Nothing is imperatively mutated — changing a signal
+ * automatically re-derives both the preview styles and the code snippet.
+ *
+ * Three outputs share the same signal graph:
+ *   containerStyle() → applied to .preview-grid via [style]
+ *   itemStyles()     → applied per-item via @for loop
+ *   css()            → displayed in the <pre> code footer
+ */
 export class GridPlaygroundComponent {
   // ── Column controls ──────────────────────────────────────────────────────────
+
+  /** Active column sizing strategy — determines which secondary slider is shown. */
   protected readonly colMode      = signal<ColMode>('equal-fr');
+  /** Number of equal 1fr columns (active in equal-fr mode only). */
   protected readonly colCount     = signal(3);
+  /** Column width in px for fixed-px mode. */
   protected readonly colWidth     = signal(120);
+  /** Min column width for auto-fit/auto-fill minmax() (active in those modes only). */
   protected readonly autoMinWidth = signal(100);
+
+  /**
+   * Type-cast wrapper — Angular's template parser rejects `$event as ColMode` inline,
+   * so the narrowing from string → ColMode is done here.
+   */
   protected setColMode(v: string): void { this.colMode.set(v as ColMode); }
 
   // ── Row controls ─────────────────────────────────────────────────────────────
+
+  /** 'auto' lets rows size to content; 'fixed' applies a uniform px height to all rows. */
   protected readonly rowMode   = signal<RowMode>('auto');
+  /** Row height in px, used when rowMode is 'fixed'. */
   protected readonly rowHeight = signal(80);
   protected setRowMode(v: string): void { this.rowMode.set(v as RowMode); }
 
   // ── Gap ──────────────────────────────────────────────────────────────────────
+
+  /** Space between column tracks in px. */
   protected readonly colGap = signal(8);
+  /** Space between row tracks in px. */
   protected readonly rowGap = signal(8);
 
   // ── Auto flow ────────────────────────────────────────────────────────────────
+
+  /** Controls the direction items auto-place into the grid, and whether dense packing is enabled. */
   protected readonly autoFlow = signal<FlowMode>('row');
   protected setAutoFlow(v: string): void { this.autoFlow.set(v as FlowMode); }
 
   // ── Item alignment ───────────────────────────────────────────────────────────
+
+  /** Horizontal alignment of each item within its cell. 'stretch' fills the full cell width. */
   protected readonly justifyItems = signal<ItemAlign>('stretch');
   protected setJustifyItems(v: string): void { this.justifyItems.set(v as ItemAlign); }
+
+  /** Vertical alignment of each item within its cell. 'stretch' fills the full cell height. */
   protected readonly alignItems = signal<ItemAlign>('stretch');
   protected setAlignItems(v: string): void { this.alignItems.set(v as ItemAlign); }
 
   // ── Content alignment ────────────────────────────────────────────────────────
+
+  /** Full set of valid justify-content/align-content values for the toggle component. */
   protected readonly contentOptions: ContentAlign[] = [
     'start', 'end', 'center', 'stretch',
     'space-between', 'space-around', 'space-evenly',
   ];
+
+  /** Horizontal distribution of the whole grid within its container (visible when grid < container). */
   protected readonly justifyContent = signal<ContentAlign>('start');
   protected setJustifyContent(v: string): void { this.justifyContent.set(v as ContentAlign); }
+
+  /** Vertical distribution of the whole grid within its container. */
   protected readonly alignContent = signal<ContentAlign>('start');
   protected setAlignContent(v: string): void { this.alignContent.set(v as ContentAlign); }
 
   // ── Items ────────────────────────────────────────────────────────────────────
+
+  /** Number of boxes rendered in the preview. Drives the length of itemStyles(). */
   protected readonly itemCount    = signal(7);
+  /** Column span for item 1 (the white-outlined "hero" box). */
   protected readonly item1ColSpan = signal(1);
+  /** Row span for item 1. */
   protected readonly item1RowSpan = signal(1);
 
   // ── Derived ──────────────────────────────────────────────────────────────────
+
+  /**
+   * Intermediate computed — maps the ColMode enum to the actual CSS value string.
+   * Extracted as its own computed so both containerStyle and css can share it
+   * without duplicating the switch statement.
+   * Private because no template or other class member needs to read it directly.
+   */
   private readonly templateColumns = computed(() => {
     switch (this.colMode()) {
       case 'equal-fr':  return `repeat(${this.colCount()}, 1fr)`;
@@ -408,6 +459,11 @@ export class GridPlaygroundComponent {
     }
   });
 
+  /**
+   * Full inline style object applied to the preview grid container via [style].
+   * Angular's [style] binding accepts Record<string, string> and applies each
+   * key as an individual inline style property, patching only what changed.
+   */
   protected readonly containerStyle = computed<Record<string, string>>(() => ({
     'grid-template-columns': this.templateColumns(),
     'grid-auto-rows':        this.rowMode() === 'fixed' ? `${this.rowHeight()}px` : 'auto',
@@ -420,6 +476,12 @@ export class GridPlaygroundComponent {
     'align-content':         this.alignContent(),
   }));
 
+  /**
+   * Generates one style object per box based on itemCount().
+   * Array.from({ length: N }, fn) creates N items without a pre-seeded array.
+   * Only item 1 (index 0) gets span rules, and only when their values exceed 1 —
+   * no point emitting `grid-column: span 1` since that's the default.
+   */
   protected readonly itemStyles = computed(() =>
     Array.from({ length: this.itemCount() }, (_, i) => {
       const base: Record<string, string> = {
@@ -433,7 +495,17 @@ export class GridPlaygroundComponent {
     }),
   );
 
-  // CSS output — only emits non-default values to model real-world usage
+  /**
+   * Builds the formatted CSS string shown in the <pre> code footer.
+   *
+   * Key design decisions:
+   * - Only non-default values are emitted, modelling real-world CSS authoring.
+   *   (e.g. grid-auto-flow:row is the default, so it's omitted when unchanged)
+   * - gap is emitted as the shorthand when colGap === rowGap, otherwise longhands.
+   * - Lines are pushed into an array and joined with \n so the <pre> tag renders
+   *   them with correct indentation.
+   * - item-1 rules are appended as a separate block only when span > 1.
+   */
   protected readonly css = computed(() => {
     const lines: string[] = ['.grid {', '  display: grid;'];
 

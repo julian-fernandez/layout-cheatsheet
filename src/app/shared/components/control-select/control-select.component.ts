@@ -57,13 +57,31 @@ import { Component, input, output } from '@angular/core';
     }
   `,
 })
+/**
+ * Reusable native <select> dropdown.
+ * Stateless: reflects `value` from the parent and emits the new selection via `valueChange`.
+ * The `id` input wires the <label> to the <select> element for accessibility.
+ */
 export class ControlSelectComponent {
+  /** Unique HTML id linking the <label> to the <select> — required for accessibility. */
   readonly id = input.required<string>();
+
+  /** Label text displayed above the dropdown. */
   readonly label = input.required<string>();
+
+  /** Options rendered as <option> elements inside the <select>. */
   readonly options = input.required<string[]>();
+
+  /** Currently selected value — pre-selects the matching <option>. */
   readonly value = input.required<string>();
+
+  /** Emits the newly selected string on change so the parent signal can be updated. */
   readonly valueChange = output<string>();
 
+  /**
+   * Native `change` events carry string values.
+   * Casts to HTMLSelectElement and emits the selected value.
+   */
   protected onChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.valueChange.emit(select.value);

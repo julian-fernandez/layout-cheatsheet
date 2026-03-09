@@ -127,9 +127,32 @@ import { Component, input } from '@angular/core';
     }
   `,
 })
+/**
+ * Wrapper card used by every individual CSS property demo.
+ * Provides a consistent layout: header (property name + description),
+ * two-column body (controls | preview), and an optional CSS code footer.
+ *
+ * Uses named ng-content slots so demo components can project their own
+ * controls and preview without this component knowing about them:
+ *   <lc-control-toggle controls .../>  → rendered inside .demo__controls
+ *   <lc-preview-box    preview  .../>  → rendered inside .demo__preview
+ *
+ * Content that does not match either slot is silently discarded.
+ */
 export class PropertyDemoComponent {
+  /** CSS property name shown in the card header (e.g. "flex-direction"). */
   readonly property = input.required<string>();
+
+  /** Plain-text description of what the property does and when to use it. */
   readonly description = input.required<string>();
+
+  /** Optional badge indicating which element type the property applies to (e.g. "flex container"). */
   readonly appliesTo = input<string>('');
+
+  /**
+   * Pre-formatted CSS string rendered inside a <pre> tag in the code footer.
+   * Use \n in the string for multi-line output — whitespace is preserved.
+   * If the string is empty the footer is hidden entirely.
+   */
   readonly cssOutput = input<string>('');
 }

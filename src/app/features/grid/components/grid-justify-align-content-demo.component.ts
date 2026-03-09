@@ -40,12 +40,16 @@ const OPTIONS = ['start', 'end', 'center', 'stretch', 'space-between', 'space-ar
 })
 export class GridJustifyAlignContentDemoComponent {
   protected readonly options = OPTIONS;
+
+  /** Horizontal distribution of the entire grid within its container. */
   protected readonly justifyContent = signal('start');
+
+  /** Vertical distribution of the entire grid within its container. */
   protected readonly alignContent = signal('start');
 
-  // 'auto' tracks: size to content by default (small), so start/end/center/space-* all show
-  // leftover space around them. 'stretch' then expands those auto tracks to fill the container —
-  // which is the only sizing that allows stretch to actually do something.
+  // `auto` tracks size to content (small boxes), leaving leftover space for start/end/center/space-*
+  // to distribute. `stretch` then expands those auto tracks to fill all remaining container space.
+  // Using fixed-px tracks instead would eliminate leftover space and make this demo invisible.
   protected readonly boxes: { style: Record<string, string> }[] = [
     { style: { 'min-width': '60px', 'min-height': '60px' } },
     { style: { 'min-width': '60px', 'min-height': '60px' } },
@@ -53,6 +57,11 @@ export class GridJustifyAlignContentDemoComponent {
     { style: { 'min-width': '60px', 'min-height': '60px' } },
   ];
 
+  /**
+   * `auto` column and row tracks size to content, keeping the grid smaller than its container.
+   * That leftover space is what justify-content and align-content distribute.
+   * min-height ensures the container is taller than the grid so align-content is visible.
+   */
   protected readonly containerStyle = computed(() => ({
     display: 'grid',
     'grid-template-columns': 'repeat(2, auto)',
@@ -65,6 +74,7 @@ export class GridJustifyAlignContentDemoComponent {
     width: '100%',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. */
   protected readonly css = computed(
     () =>
       `justify-content: ${this.justifyContent()}; align-content: ${this.alignContent()};`

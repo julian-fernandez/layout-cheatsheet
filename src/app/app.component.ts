@@ -150,10 +150,28 @@ type Tab = 'flexbox' | 'grid' | 'grid-playground' | 'flex-playground';
     }
   `,
 })
+/**
+ * Root shell component for the CSS Layout Cheatsheet.
+ * Owns the top-level tab state and switches between the four content sections.
+ *
+ * No router is used — tab state is a single signal, which is sufficient
+ * for a single-page tool with no deep-link or back-button requirements.
+ * The @switch block in the template renders only the active section,
+ * so inactive tabs are destroyed from the DOM (no hidden components kept alive).
+ */
 export class AppComponent {
+  /**
+   * Currently active tab identifier.
+   * Drives both the highlighted tab button (via [class.tabs__btn--active])
+   * and the @switch block that renders the correct section component.
+   */
   protected readonly activeTab = signal<Tab>('flexbox');
 
-
+  /**
+   * Static tab metadata array — `id` matches the Tab union type
+   * and is what the signal stores; `label` is display-only text.
+   * Declared as a plain array (not a signal) because it never changes at runtime.
+   */
   protected readonly tabs: { id: Tab; label: string }[] = [
     { id: 'flexbox',          label: 'Flexbox' },
     { id: 'grid',             label: 'CSS Grid' },

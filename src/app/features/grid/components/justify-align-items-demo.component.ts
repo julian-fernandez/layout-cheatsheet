@@ -40,11 +40,15 @@ const OPTIONS = ['start', 'end', 'center', 'stretch'];
 })
 export class JustifyAlignItemsDemoComponent {
   protected readonly options = OPTIONS;
+
+  /** Horizontal alignment of items within their cell (inline axis). Defaults to 'stretch'. */
   protected readonly justifyItems = signal('stretch');
+
+  /** Vertical alignment of items within their cell (block axis). Defaults to 'stretch'. */
   protected readonly alignItems = signal('stretch');
 
-  // min-width/min-height give items a natural size for start/end/center,
-  // but don't block grid stretch (unlike width/height which take priority over stretch).
+  // min-width/min-height give items a natural size so start/end/center shrink them visibly,
+  // while NOT blocking stretch from overriding the cross-size (as an explicit width/height would).
   protected readonly boxes: { style: Record<string, string> }[] = [
     { style: { 'min-width': '48px', 'min-height': '48px' } },
     { style: { 'min-width': '48px', 'min-height': '48px' } },
@@ -52,6 +56,10 @@ export class JustifyAlignItemsDemoComponent {
     { style: { 'min-width': '48px', 'min-height': '48px' } },
   ];
 
+  /**
+   * Fixed row heights (100px) give each cell a defined space so
+   * the vertical alignment (align-items) has room to show its effect.
+   */
   protected readonly containerStyle = computed(() => ({
     display: 'grid',
     'grid-template-columns': 'repeat(2, 1fr)',
@@ -62,6 +70,7 @@ export class JustifyAlignItemsDemoComponent {
     padding: '12px',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. */
   protected readonly css = computed(
     () =>
       `justify-items: ${this.justifyItems()}; align-items: ${this.alignItems()};`

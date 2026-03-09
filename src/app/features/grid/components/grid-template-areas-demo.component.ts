@@ -68,9 +68,21 @@ interface Preset {
   `,
 })
 export class GridTemplateAreasDemoComponent {
+  /** Currently selected layout preset. */
   protected readonly layout = signal<Layout>('standard');
+
+  /**
+   * Wrapper method for the `(valueChange)` binding.
+   * Angular's template parser doesn't support `$event as Layout` inline casts,
+   * so the type narrowing happens here in the class instead.
+   */
   protected setLayout(value: string): void { this.layout.set(value as Layout); }
 
+  /**
+   * Static map of layout presets — each defines the column sizes, row sizes,
+   * and the ASCII-art area name strings that grid-template-areas expects.
+   * Private because only the computed properties read from it.
+   */
   private readonly presets: Record<Layout, Preset> = {
     standard: {
       columns: '180px 1fr',
@@ -89,6 +101,10 @@ export class GridTemplateAreasDemoComponent {
     },
   };
 
+  /**
+   * Derives the inline style object for the preview container from the active preset.
+   * grid-template-areas requires the area strings joined with spaces into a single value.
+   */
   protected readonly containerStyle = computed(() => {
     const p = this.presets[this.layout()];
     return {
@@ -98,6 +114,10 @@ export class GridTemplateAreasDemoComponent {
     };
   });
 
+  /**
+   * Derives the formatted CSS output.
+   * Area strings are indented individually so they render as a readable ASCII grid in the <pre> block.
+   */
   protected readonly css = computed(() => {
     const p = this.presets[this.layout()];
     const areaLines = p.areas.map((a) => `  ${a}`).join('\n');

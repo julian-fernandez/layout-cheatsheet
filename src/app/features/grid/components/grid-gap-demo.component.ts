@@ -43,10 +43,16 @@ import { ControlSliderComponent } from '../../../shared/components/control-slide
   `,
 })
 export class GridGapDemoComponent {
+  /** Horizontal space between column tracks. */
   protected readonly colGap = signal(8);
+
+  /** Vertical space between row tracks. */
   protected readonly rowGap = signal(8);
+
+  // 6 items in a 3-column grid gives 2 rows, so both column-gap and row-gap are always visible.
   protected readonly boxes = [{}, {}, {}, {}, {}, {}];
 
+  /** Derives the container style. Longhand properties used so both gaps are independently visible. */
   protected readonly containerStyle = computed(() => ({
     display: 'grid',
     'grid-template-columns': 'repeat(3, 1fr)',
@@ -55,6 +61,7 @@ export class GridGapDemoComponent {
     padding: '12px',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. */
   protected readonly css = computed(
     () => `column-gap: ${this.colGap()}px; row-gap: ${this.rowGap()}px;`
   );

@@ -397,50 +397,85 @@ const BOX_COLORS = [
     }
   `,
 })
+/**
+ * Single large playground for all Flexbox container and item properties.
+ *
+ * Two items (item 1 and item 2) have independent item-level controls so users
+ * can see how grow/shrink/basis interact between siblings — not just in isolation.
+ * Items 3+ are plain boxes with a fixed flex-basis so they don't get in the way.
+ *
+ * Same derived-signal architecture as GridPlaygroundComponent:
+ *   containerStyle() → [style] on the flex container
+ *   itemStyles()     → [style] per item via @for
+ *   css()            → <pre> code output
+ */
 export class FlexPlaygroundComponent {
-  // ── Container ────────────────────────────────────────────────────────────────
+  // ── Container signals ────────────────────────────────────────────────────────
+
+  /** Main axis direction of the flex container. */
   protected readonly direction = signal<Direction>('row');
   protected setDirection(v: string): void { this.direction.set(v as Direction); }
 
+  /** Whether items wrap when they overflow the main axis. */
   protected readonly wrap = signal<Wrap>('nowrap');
   protected setWrap(v: string): void { this.wrap.set(v as Wrap); }
 
+  /** All valid justify-content values — passed directly to the toggle component. */
   protected readonly justifyOptions: JustifyContent[] = [
     'flex-start', 'flex-end', 'center', 'space-between', 'space-around', 'space-evenly',
   ];
+  /** Distribution of items along the main axis. */
   protected readonly justifyContent = signal<JustifyContent>('flex-start');
   protected setJustifyContent(v: string): void { this.justifyContent.set(v as JustifyContent); }
 
+  /** All valid align-items values — passed to the toggle component. */
   protected readonly alignItemsOptions: AlignItems[] = [
     'flex-start', 'flex-end', 'center', 'stretch', 'baseline',
   ];
+  /** Cross-axis alignment of items on a single line. */
   protected readonly alignItems = signal<AlignItems>('stretch');
   protected setAlignItems(v: string): void { this.alignItems.set(v as AlignItems); }
 
+  /** All valid align-content values — passed to the toggle component. */
   protected readonly alignContentOptions: AlignContent[] = [
     'flex-start', 'flex-end', 'center', 'stretch', 'space-between', 'space-around', 'space-evenly',
   ];
+  /**
+   * Cross-axis distribution of multiple lines when flex-wrap is active.
+   * Has no effect on a single-line container — the CSS output intentionally
+   * omits this when wrap is 'nowrap'.
+   */
   protected readonly alignContent = signal<AlignContent>('flex-start');
   protected setAlignContent(v: string): void { this.alignContent.set(v as AlignContent); }
 
+  /** Space between columns (inline axis). */
   protected readonly colGap = signal(8);
+  /** Space between wrapped rows (block axis). */
   protected readonly rowGap = signal(8);
 
-  // ── Items ────────────────────────────────────────────────────────────────────
+  // ── Item signals ─────────────────────────────────────────────────────────────
+
+  /** Total number of flex items rendered in the preview. */
   protected readonly itemCount = signal(5);
 
-  // Item 1
+  // Item 1 — independently controlled so its interaction with item 2 is visible
+  /** Item 1's share of free space when positive. 0 = don't grow (default). */
   protected readonly i1Grow      = signal(0);
+  /** Item 1's shrink ratio when space is scarce. 1 = shrink proportionally (default). */
   protected readonly i1Shrink    = signal(1);
+  /** Item 1's initial main-size before grow/shrink are applied. */
   protected readonly i1Basis     = signal(120);
+  /** All valid align-self values. */
   protected readonly alignSelfOptions: AlignSelf[] = [
     'auto', 'flex-start', 'flex-end', 'center', 'stretch', 'baseline',
   ];
+  /** Item 1's individual cross-axis alignment override (overrides align-items). */
   protected readonly i1AlignSelf = signal<AlignSelf>('auto');
   protected setI1AlignSelf(v: string): void { this.i1AlignSelf.set(v as AlignSelf); }
+  /** Item 1's visual order (lower values appear first). */
   protected readonly i1Order     = signal(0);
 
-  // Item 2
+  // Item 2 — same set of controls as item 1 for direct comparison
   protected readonly i2Grow      = signal(0);
   protected readonly i2Shrink    = signal(1);
   protected readonly i2Basis     = signal(120);
@@ -449,6 +484,12 @@ export class FlexPlaygroundComponent {
   protected readonly i2Order     = signal(0);
 
   // ── Derived ──────────────────────────────────────────────────────────────────
+
+  /**
+   * Full inline style object applied to the flex container.
+   * All container-level flex properties are included — their defaults are valid CSS
+   * so the preview always renders correctly even before the user changes anything.
+   */
   protected readonly containerStyle = computed<Record<string, string>>(() => ({
     'flex-direction':  this.direction(),
     'flex-wrap':       this.wrap(),
@@ -459,6 +500,12 @@ export class FlexPlaygroundComponent {
     'row-gap':         `${this.rowGap()}px`,
   }));
 
+  /**
+   * Generates one style object per flex item.
+   * Items 1 & 2 receive full item-level controls; items 3+ get only a background
+   * and a fixed flex-basis of 120px so they don't grow/shrink unexpectedly.
+   * Numeric values are cast to String — Angular's [style] binding requires strings.
+   */
   protected readonly itemStyles = computed(() =>
     Array.from({ length: this.itemCount() }, (_, i): Record<string, string> => {
       const bg = BOX_COLORS[i % BOX_COLORS.length];
@@ -482,11 +529,22 @@ export class FlexPlaygroundComponent {
           'order':        String(this.i2Order()),
         };
       }
+      // Items 3+ are passive — fixed basis prevents unexpected shrinking/growing
       return { background: bg, 'flex-basis': '120px' };
     }),
   );
 
-  // CSS output — only emits non-default values to model real-world usage
+  /**
+   * Builds the formatted CSS string for the <pre> code footer.
+   *
+   * Rules for what gets emitted:
+   * - Container properties: only emit when different from the flex default.
+   *   (flex-direction:row, flex-wrap:nowrap, etc. are defaults — omitted when unchanged)
+   * - align-content is only emitted when wrap is active (it has no effect otherwise).
+   * - gap collapses to the shorthand when column-gap === row-gap.
+   * - Item 1 and Item 2 blocks only appear when at least one property differs from its default.
+   *   (flex-grow:0, flex-shrink:1, align-self:auto, order:0 are the CSS defaults)
+   */
   protected readonly css = computed(() => {
     const lines: string[] = ['.flex-container {', '  display: flex;'];
 
@@ -498,6 +556,7 @@ export class FlexPlaygroundComponent {
       lines.push(`  justify-content: ${this.justifyContent()};`);
     if (this.alignItems() !== 'stretch')
       lines.push(`  align-items: ${this.alignItems()};`);
+    // align-content only matters (and is only emitted) when wrapping is on
     if (this.wrap() !== 'nowrap' && this.alignContent() !== 'flex-start')
       lines.push(`  align-content: ${this.alignContent()};`);
 
@@ -510,22 +569,22 @@ export class FlexPlaygroundComponent {
 
     lines.push('}');
 
-    // Item 1 — only emit properties that differ from flex defaults
+    // Item 1 — only emit properties that differ from flex item defaults
     const i1: string[] = [];
-    if (this.i1Grow() !== 0)         i1.push(`  flex-grow: ${this.i1Grow()};`);
-    if (this.i1Shrink() !== 1)       i1.push(`  flex-shrink: ${this.i1Shrink()};`);
-    if (this.i1Basis() !== 120)      i1.push(`  flex-basis: ${this.i1Basis()}px;`);
+    if (this.i1Grow() !== 0)           i1.push(`  flex-grow: ${this.i1Grow()};`);
+    if (this.i1Shrink() !== 1)         i1.push(`  flex-shrink: ${this.i1Shrink()};`);
+    if (this.i1Basis() !== 120)        i1.push(`  flex-basis: ${this.i1Basis()}px;`);
     if (this.i1AlignSelf() !== 'auto') i1.push(`  align-self: ${this.i1AlignSelf()};`);
-    if (this.i1Order() !== 0)        i1.push(`  order: ${this.i1Order()};`);
+    if (this.i1Order() !== 0)          i1.push(`  order: ${this.i1Order()};`);
     if (i1.length) lines.push('', '.item-1 {', ...i1, '}');
 
-    // Item 2
+    // Item 2 — same logic as item 1
     const i2: string[] = [];
-    if (this.i2Grow() !== 0)         i2.push(`  flex-grow: ${this.i2Grow()};`);
-    if (this.i2Shrink() !== 1)       i2.push(`  flex-shrink: ${this.i2Shrink()};`);
-    if (this.i2Basis() !== 120)      i2.push(`  flex-basis: ${this.i2Basis()}px;`);
+    if (this.i2Grow() !== 0)           i2.push(`  flex-grow: ${this.i2Grow()};`);
+    if (this.i2Shrink() !== 1)         i2.push(`  flex-shrink: ${this.i2Shrink()};`);
+    if (this.i2Basis() !== 120)        i2.push(`  flex-basis: ${this.i2Basis()}px;`);
     if (this.i2AlignSelf() !== 'auto') i2.push(`  align-self: ${this.i2AlignSelf()};`);
-    if (this.i2Order() !== 0)        i2.push(`  order: ${this.i2Order()};`);
+    if (this.i2Order() !== 0)          i2.push(`  order: ${this.i2Order()};`);
     if (i2.length) lines.push('', '.item-2 {', ...i2, '}');
 
     return lines.join('\n');

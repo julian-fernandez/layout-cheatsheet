@@ -32,8 +32,10 @@ import { ControlSliderComponent } from '../../../shared/components/control-slide
   `,
 })
 export class GridColumnSpanDemoComponent {
+  /** Number of column tracks that item 1 spans. */
   protected readonly span = signal(2);
 
+  // containerStyle is static — only the span value changes.
   protected readonly containerStyle = {
     display: 'grid',
     'grid-template-columns': 'repeat(3, 1fr)',
@@ -41,6 +43,10 @@ export class GridColumnSpanDemoComponent {
     padding: '12px',
   };
 
+  /**
+   * Only box 1 gets the span style; the rest are plain items that auto-place
+   * around it, showing how spanning pushes subsequent items to the next row.
+   */
   protected readonly boxes = computed(() => [
     { style: { 'grid-column': `span ${this.span()}` } },
     {},
@@ -49,5 +55,6 @@ export class GridColumnSpanDemoComponent {
     {},
   ]);
 
+  /** Derives the CSS snippet for the spanning item. */
   protected readonly css = computed(() => `.item-1 { grid-column: span ${this.span()}; }`);
 }

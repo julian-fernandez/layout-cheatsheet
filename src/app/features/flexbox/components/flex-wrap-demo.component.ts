@@ -33,6 +33,8 @@ const OPTIONS = ['nowrap', 'wrap', 'wrap-reverse'];
 })
 export class FlexWrapDemoComponent {
   protected readonly options = OPTIONS;
+
+  /** Currently selected flex-wrap value. */
   protected readonly value = signal('nowrap');
 
   // Items must be wide enough that 6 of them overflow the container, forcing wrapping
@@ -45,6 +47,7 @@ export class FlexWrapDemoComponent {
     { style: { 'min-width': '160px', 'min-height': '56px' } },
   ];
 
+  /** Derives the container style object from the selected value. */
   protected readonly containerStyle = computed(() => ({
     display: 'flex',
     'flex-wrap': this.value(),
@@ -52,5 +55,6 @@ export class FlexWrapDemoComponent {
     padding: '12px',
   }));
 
+  /** Derives the CSS snippet shown in the code footer. */
   protected readonly css = computed(() => `display: flex; flex-wrap: ${this.value()};`);
 }
